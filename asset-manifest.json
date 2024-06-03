@@ -1,0 +1,20 @@
+{
+  "files": {
+    "main.css": "/static/css/main.1af5a355.css",
+    "main.js": "/static/js/main.d494e4b3.js",
+    "static/js/453.d2840fe1.chunk.js": "/static/js/453.d2840fe1.chunk.js",
+    "static/media/gandalf.png": "/static/media/gandalf.321d7906da32f3dbf771.png",
+    "static/media/meteocons-webfont.svg": "/static/media/meteocons-webfont.2a339081521710c8b388.svg",
+    "static/media/meteocons-webfont.ttf": "/static/media/meteocons-webfont.6d39adaaa75942cc2061.ttf",
+    "static/media/meteocons-webfont.woff": "/static/media/meteocons-webfont.c962ab8ad8a73ae33486.woff",
+    "static/media/meteocons-webfont.eot": "/static/media/meteocons-webfont.37b24e4da1f434136409.eot",
+    "index.html": "/index.html",
+    "main.1af5a355.css.map": "/static/css/main.1af5a355.css.map",
+    "main.d494e4b3.js.map": "/static/js/main.d494e4b3.js.map",
+    "453.d2840fe1.chunk.js.map": "/static/js/453.d2840fe1.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.1af5a355.css",
+    "static/js/main.d494e4b3.js"
+  ]
+}
