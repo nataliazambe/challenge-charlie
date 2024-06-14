@@ -9,8 +9,8 @@ interface PanelProps {
     wind: number;
     humidity: number;
     pressure: number;
-    tomorrowTemp: number | null;
-    theDayAfterTomorrowTemp: number | null;
+    tomorrowTemp: number;
+    theDayAfterTomorrowTemp: number;
     icon: string;
 }
 
@@ -21,7 +21,7 @@ interface MyComponentProps {
 interface WeatherForecast {
     date: Date;
     status: string;
-    tempToday?: number;
+    tempToday: number;
     wind: number;
     humidity: number;
     pressure: number;
@@ -34,24 +34,38 @@ interface Infos {
     localization: string;
     todaysForecast: WeatherForecast;
     tomorrowsDate: Date;
-    tomorrowsTemp: number | null;
+    tomorrowsTemp: number;
     theDayAfterTomorrowDate: Date;
-    theDayAfterTomorrowTemp: number | null;
+    theDayAfterTomorrowTemp: number;
 }
 
 function Panel(props: MyComponentProps) {
     const { data } = props;
+    const [isCelsius, setIsCelsius] = React.useState(true);
 
-    const todayColor =
-        data && data.temp !== null ? getColorForTemperature(data.temp) : "grey";
-    const tomorrowColor =
-        data && data.tomorrowTemp !== null
-            ? getColorForTemperature(data.tomorrowTemp)
-            : "grey";
-    const dayAfterTomorrowColor =
-        data && data.theDayAfterTomorrowTemp !== null
-            ? getColorForTemperature(data.theDayAfterTomorrowTemp)
-            : "grey";
+    const convertTemperature = (temp: number): number => {
+        return isCelsius ? temp : (temp * 9) / 5 + 32;
+    };
+
+    const toggleTemperature = () => {
+        setIsCelsius(!isCelsius);
+    };
+
+    const convertedTempToday = data ? convertTemperature(data.temp) : 0;
+    const convertedTempTomorrow = data
+        ? convertTemperature(data.tomorrowTemp)
+        : 0;
+    const convertedTempAfterTomorrow = data
+        ? convertTemperature(data.theDayAfterTomorrowTemp)
+        : 0;
+
+    const todayColor = data ? getColorForTemperature(data.temp) : "grey";
+    const tomorrowColor = data
+        ? getColorForTemperature(data.tomorrowTemp)
+        : "grey";
+    const dayAfterTomorrowColor = data
+        ? getColorForTemperature(data.theDayAfterTomorrowTemp)
+        : "grey";
 
     return (
         <div className="container">
@@ -70,8 +84,15 @@ function Panel(props: MyComponentProps) {
                 <div className="text">
                     <div className="start">
                         <span>HOJE</span>
-                        <span>
-                            {data ? `${roundToInteger(data.temp)}°C` : "--°C"}
+                        <span
+                            onClick={toggleTemperature}
+                            style={{ cursor: "pointer" }}
+                        >
+                            {data
+                                ? `${roundToInteger(convertedTempToday)}°${
+                                      isCelsius ? "C" : "F"
+                                  }`
+                                : "--°C"}
                         </span>
                     </div>
                     <div className="middle">
@@ -93,9 +114,14 @@ function Panel(props: MyComponentProps) {
             <div className="content" style={{ backgroundColor: tomorrowColor }}>
                 <div className="info">
                     <span>AMANHÃ</span>
-                    <span>
-                        {data && data.tomorrowTemp !== null
-                            ? `${roundToInteger(data.tomorrowTemp)}°C`
+                    <span
+                        onClick={toggleTemperature}
+                        style={{ cursor: "pointer" }}
+                    >
+                        {data
+                            ? `${roundToInteger(convertedTempTomorrow)}°${
+                                  isCelsius ? "C" : "F"
+                              }`
                             : "--°C"}
                     </span>
                 </div>
@@ -106,11 +132,14 @@ function Panel(props: MyComponentProps) {
             >
                 <div className="footer">
                     <span>DEPOIS DE AMANHÃ</span>
-                    <span>
-                        {data && data.theDayAfterTomorrowTemp !== null
-                            ? `${roundToInteger(
-                                  data.theDayAfterTomorrowTemp
-                              )}°C`
+                    <span
+                        onClick={toggleTemperature}
+                        style={{ cursor: "pointer" }}
+                    >
+                        {data
+                            ? `${roundToInteger(convertedTempAfterTomorrow)}°${
+                                  isCelsius ? "C" : "F"
+                              }`
                             : "--°C"}
                     </span>
                 </div>
@@ -219,7 +248,7 @@ function increaseDay(todaysDate: Date): Promise<Date> {
 async function getOpenWeatherTomorrow(
     local: string,
     tomorrowsDate: Date
-): Promise<number | null> {
+): Promise<number> {
     try {
         const response = await fetch(
             `https://api.openweathermap.org/data/2.5/forecast?q=${local}&appid=d3682fc83138e0d4f4d3bb7f1f04f247&units=metric`
@@ -248,12 +277,7 @@ async function getOpenWeatherTomorrow(
                 closestForecast = tomorrowsForecast[i];
             }
         }
-
-        if (closestForecast) {
-            return closestForecast.main.temp;
-        } else {
-            return null;
-        }
+        return closestForecast.main.temp;
     } catch (error) {
         console.error("Erro ao obter dados do OpenWeather:", error);
         throw error;
@@ -325,7 +349,6 @@ function App() {
         }
         fetchData();
     }, []);
-
     return (
         <div
             className="App"
@@ -338,7 +361,7 @@ function App() {
                               localization: info.localization,
                               status: info.todaysForecast.status,
                               icon: info.todaysForecast.icon,
-                              temp: info.todaysForecast.tempToday || 0,
+                              temp: info.todaysForecast.tempToday,
                               wind: info.todaysForecast.wind,
                               humidity: info.todaysForecast.humidity,
                               pressure: info.todaysForecast.pressure,
