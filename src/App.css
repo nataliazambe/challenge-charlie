@@ -31,8 +31,16 @@
 .icone-local {
     font-size: 50px;
     margin-top: 13px;
-    margin-right: 13px;
+    margin-left: 13px;
     color: gray;
+    width: 20%;
+}
+
+.local {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 85%;
 }
 
 .App {
@@ -139,6 +147,25 @@
 
 img {
     width: 80%;
+}
+
+input {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #f4efeb;
+    border: none;
+    font-size: 34px;
+    font-weight: bold;
+    color: gray;
+    outline: none;
+    width: 100%;
+    letter-spacing: -0.025em;
+    word-spacing: -0.2em;
+}
+
+input:focus::placeholder {
+    color: transparent;
 }
 
 .start {

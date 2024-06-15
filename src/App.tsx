@@ -1,5 +1,4 @@
 import React from "react";
-import logo from "./logo.svg";
 import "./App.css";
 
 interface PanelProps {
@@ -16,6 +15,7 @@ interface PanelProps {
 
 interface MyComponentProps {
     data: PanelProps | null;
+    onLocalizationChange: (newLocalization: string) => void;
 }
 
 interface WeatherForecast {
@@ -29,9 +29,6 @@ interface WeatherForecast {
 }
 
 interface Infos {
-    backgroundUrl: string;
-    latLong: GeolocationPosition;
-    localization: string;
     todaysForecast: WeatherForecast;
     tomorrowsDate: Date;
     tomorrowsTemp: number;
@@ -40,8 +37,15 @@ interface Infos {
 }
 
 function Panel(props: MyComponentProps) {
-    const { data } = props;
+    const { data, onLocalizationChange } = props;
+
     const [isCelsius, setIsCelsius] = React.useState(true);
+    const [localization, setlocalization] = React.useState(
+        data ? data.localization : ""
+    );
+    React.useEffect(() => {
+        setlocalization(data ? data.localization : "");
+    }, [data?.localization]);
 
     const convertTemperature = (temp: number): number => {
         return isCelsius ? temp : (temp * 9) / 5 + 32;
@@ -67,11 +71,29 @@ function Panel(props: MyComponentProps) {
         ? getColorForTemperature(data.theDayAfterTomorrowTemp)
         : "grey";
 
+    const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setlocalization(event.target.value);
+    };
+
+    const handleKeyPress = (event: React.KeyboardEvent<HTMLInputElement>) => {
+        if (event.key === "Enter") {
+            onLocalizationChange(localization);
+        }
+    };
     return (
         <div className="container">
             <div className="header">
-                <a className="icone-local" data-icon="("></a>
-                <h1 id="rio">{data ? data.localization : "Desconhecido"}</h1>
+                <div className="local">
+                    <a className="icone-local" data-icon="("></a>
+
+                    <input
+                        type="text"
+                        value={localization}
+                        onChange={handleInputChange}
+                        onKeyDown={handleKeyPress}
+                        placeholder="Digite a localização"
+                    />
+                </div>
             </div>
             <div className="main" style={{ backgroundColor: todayColor }}>
                 <div className="img">
@@ -306,23 +328,39 @@ function roundToInteger(value: number): number {
 
 function App() {
     const [info, setInfo] = React.useState<Infos | null>(null);
+    const [local, setLocal] = React.useState<string>("");
+    const [bingImage, setBingImage] = React.useState<string>("");
 
+    const handleLocalizationChange = (newLocalization: string) => {
+        setLocal(newLocalization);
+    };
+    React.useEffect(() => {
+        async function init() {
+            let backgroundUrl = await getBingApi();
+            setBingImage(backgroundUrl);
+
+            const latLong = await getLatLong();
+            const lat = latLong.coords.latitude;
+            const long = latLong.coords.longitude;
+
+            const localization = await getOpenCageApi(lat, long);
+            setLocal(localization);
+        }
+        init();
+    }, []);
     React.useEffect(() => {
         async function fetchData() {
             try {
-                let backgroundUrl = await getBingApi();
-
-                const latLong = await getLatLong();
-                const lat = latLong.coords.latitude;
-                const long = latLong.coords.longitude;
-
-                const localization = await getOpenCageApi(lat, long);
-
-                const todaysForecast = await getOpenWeatherToday(localization);
-
+                if (local == "") {
+                    throw new Error("Localização não informada!");
+                }
+                const todaysForecast = await getOpenWeatherToday(local);
+                if (todaysForecast.icon == "?") {
+                    throw new Error("Localização inválida!");
+                }
                 const tomorrowsDate = await increaseDay(todaysForecast.date);
                 const tomorrowsTemp = await getOpenWeatherTomorrow(
-                    localization,
+                    local,
                     tomorrowsDate
                 );
 
@@ -330,13 +368,10 @@ function App() {
                     tomorrowsDate
                 );
                 const theDayAfterTomorrowTemp = await getOpenWeatherTomorrow(
-                    localization,
+                    local,
                     theDayAfterTomorrowDate
                 );
                 setInfo({
-                    backgroundUrl,
-                    latLong,
-                    localization,
                     todaysForecast,
                     tomorrowsDate,
                     tomorrowsTemp,
@@ -344,21 +379,20 @@ function App() {
                     theDayAfterTomorrowTemp,
                 });
             } catch (error) {
+                setInfo(null);
                 console.error("Erro ao obter localização:", error);
             }
         }
+
         fetchData();
-    }, []);
+    }, [local]);
     return (
-        <div
-            className="App"
-            style={{ background: info ? `url(${info.backgroundUrl})` : "" }}
-        >
+        <div className="App" style={{ background: `url(${bingImage})` }}>
             <Panel
                 data={
                     info
                         ? {
-                              localization: info.localization,
+                              localization: local,
                               status: info.todaysForecast.status,
                               icon: info.todaysForecast.icon,
                               temp: info.todaysForecast.tempToday,
@@ -371,6 +405,7 @@ function App() {
                           }
                         : null
                 }
+                onLocalizationChange={handleLocalizationChange}
             />
         </div>
     );
