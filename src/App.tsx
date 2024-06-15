@@ -51,15 +51,13 @@ function App() {
                 if (todaysForecast.icon == "?") {
                     throw new Error("Localização inválida!");
                 }
-                const tomorrowsDate = await increaseDay(todaysForecast.date);
+                const tomorrowsDate = increaseDay(todaysForecast.date);
                 const tomorrowsTemp = await getOpenWeatherTomorrow(
                     local,
                     tomorrowsDate
                 );
 
-                const theDayAfterTomorrowDate = await increaseDay(
-                    tomorrowsDate
-                );
+                const theDayAfterTomorrowDate = increaseDay(tomorrowsDate);
                 const theDayAfterTomorrowTemp = await getOpenWeatherTomorrow(
                     local,
                     theDayAfterTomorrowDate

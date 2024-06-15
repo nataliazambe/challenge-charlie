@@ -26,14 +26,12 @@ export const getColorForTemperature = (
     return `rgb(${color.r}, ${color.g}, ${color.b}, ${opacity})`;
 };
 
-export function increaseDay(todaysDate: Date): Promise<Date> {
-    return new Promise((resolve) => {
-        let tomorrowsDate = new Date(todaysDate.getTime());
+export function increaseDay(todaysDate: Date): Date {
+    let tomorrowsDate = new Date(todaysDate.getTime());
 
-        tomorrowsDate.setDate(tomorrowsDate.getDate() + 1);
+    tomorrowsDate.setDate(tomorrowsDate.getDate() + 1);
 
-        resolve(tomorrowsDate);
-    });
+    return tomorrowsDate;
 }
 
 export function roundToInteger(value: number): number {
