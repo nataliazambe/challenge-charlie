@@ -2,23 +2,25 @@ import React from "react";
 import "./App.css";
 import { getBingApi } from "./utils/bing";
 import {
-    WeatherForecast,
+    WeatherData,
     getLatLong,
     getOpenCageApi,
     getOpenWeatherToday,
-    getOpenWeatherTomorrow,
+    getOpenWeatherTemperature,
 } from "./utils/forecast";
 import { increaseDay } from "./utils/other";
 import { Panel } from "./components/panel";
 
+/** Store weather data */
 interface Infos {
-    todaysForecast: WeatherForecast;
+    todaysForecast: WeatherData;
     tomorrowsDate: Date;
     tomorrowsTemp: number;
     theDayAfterTomorrowDate: Date;
     theDayAfterTomorrowTemp: number;
 }
 
+/** Main application page */
 function App() {
     const [info, setInfo] = React.useState<Infos | null>(null);
     const [local, setLocal] = React.useState<string>("");
@@ -52,13 +54,13 @@ function App() {
                     throw new Error("Localização inválida!");
                 }
                 const tomorrowsDate = increaseDay(todaysForecast.date);
-                const tomorrowsTemp = await getOpenWeatherTomorrow(
+                const tomorrowsTemp = await getOpenWeatherTemperature(
                     local,
                     tomorrowsDate
                 );
 
                 const theDayAfterTomorrowDate = increaseDay(tomorrowsDate);
-                const theDayAfterTomorrowTemp = await getOpenWeatherTomorrow(
+                const theDayAfterTomorrowTemp = await getOpenWeatherTemperature(
                     local,
                     theDayAfterTomorrowDate
                 );

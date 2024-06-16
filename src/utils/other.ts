@@ -1,9 +1,11 @@
+/** RGB color values */
 export interface Rgb {
     r: number;
     g: number;
     b: number;
 }
 
+/** Determines color based on temperature */
 export const getColorForTemperature = (temp: number): Rgb => {
     let color: Rgb;
     if (temp <= 15) {
@@ -23,6 +25,7 @@ export const getColorForTemperature = (temp: number): Rgb => {
     return color;
 };
 
+/** Get tomorrow's date from given date */
 export function increaseDay(todaysDate: Date): Date {
     let tomorrowsDate = new Date(todaysDate.getTime());
 
@@ -31,10 +34,12 @@ export function increaseDay(todaysDate: Date): Date {
     return tomorrowsDate;
 }
 
+/** Round temperature number to nearest integer */
 export function roundToInteger(value: number): number {
     return Math.round(value);
 }
 
+/** Convert Celsius to Fahrenheit if needed */
 export const convertTemperature = (
     temp: number,
     isCelsius: boolean

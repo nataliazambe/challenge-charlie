@@ -1,4 +1,5 @@
-export interface WeatherForecast {
+/** Interface for defining weather conditions data structure */
+export interface WeatherData {
     date: Date;
     status: string;
     tempToday: number;
@@ -8,12 +9,14 @@ export interface WeatherForecast {
     icon: string;
 }
 
+/** Retrieve current geolocation coordinates */
 export function getLatLong(): Promise<GeolocationPosition> {
     return new Promise((resolve, reject) => {
         navigator.geolocation.getCurrentPosition(resolve, reject);
     });
 }
 
+/** Fetch location from OpenCage API */
 export async function getOpenCageApi(
     lat: number,
     long: number
@@ -33,9 +36,8 @@ export async function getOpenCageApi(
     }
 }
 
-export async function getOpenWeatherToday(
-    local: string
-): Promise<WeatherForecast> {
+/** Fetch today's weather forecast from OpenWeatherMap API */
+export async function getOpenWeatherToday(local: string): Promise<WeatherData> {
     try {
         const response = await fetch(
             `https://api.openweathermap.org/data/2.5/weather?q=${local}&APPID=d3682fc83138e0d4f4d3bb7f1f04f247&units=metric`
@@ -68,7 +70,7 @@ export async function getOpenWeatherToday(
             "?",
         ];
 
-        let todaysForecast: WeatherForecast = {
+        let todaysForecast: WeatherData = {
             date,
             status: translatedStatus,
             icon,
@@ -85,9 +87,10 @@ export async function getOpenWeatherToday(
     }
 }
 
-export async function getOpenWeatherTomorrow(
+/** Retrieve specified day's weather temperature from OpenWeatherMap API */
+export async function getOpenWeatherTemperature(
     local: string,
-    tomorrowsDate: Date
+    date: Date
 ): Promise<number> {
     try {
         const response = await fetch(
@@ -99,7 +102,7 @@ export async function getOpenWeatherTomorrow(
         let tomorrowsForecast = [];
         for (let i = 0; i < forecasts.length; i++) {
             let forecastDate = new Date(forecasts[i].dt_txt);
-            if (forecastDate.getDate() == tomorrowsDate.getDate()) {
+            if (forecastDate.getDate() == date.getDate()) {
                 tomorrowsForecast.push(forecasts[i]);
             }
         }
@@ -111,7 +114,7 @@ export async function getOpenWeatherTomorrow(
 
         for (let i = 0; i < tomorrowsForecast.length; i++) {
             let forecastHour = new Date(tomorrowsForecast[i].dt_txt);
-            dif = Math.abs(tomorrowsDate.getHours() - forecastHour.getHours());
+            dif = Math.abs(date.getHours() - forecastHour.getHours());
             if (dif < smallestDif) {
                 smallestDif = dif;
                 closestForecast = tomorrowsForecast[i];

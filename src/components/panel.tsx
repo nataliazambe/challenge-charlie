@@ -6,15 +6,20 @@ import {
     roundToInteger,
 } from "../utils/other";
 
+/** Weather panel data structure */
 interface PanelData {
     localization: string;
+    /** Current weather status */
     status: string;
     temp: number;
+    /** Km/h wind */
     wind: number;
     humidity: number;
+    /** hPA pressure */
     pressure: number;
     tomorrowTemp: number;
     theDayAfterTomorrowTemp: number;
+    /** Meteocons font symbol */
     icon: string;
 }
 
@@ -23,6 +28,7 @@ interface PanelProps {
     onLocalizationChange: (newLocalization: string) => void;
 }
 
+/** Interactive weather dashboard component */
 export function Panel(props: PanelProps) {
     const { data, onLocalizationChange } = props;
 
@@ -59,7 +65,7 @@ export function Panel(props: PanelProps) {
         if (isHighContrast) {
             return "black";
         } else if (data) {
-            let color = getColorForTemperature(data.temp);
+            let color = getColorForTemperature(temp);
             color.r -= shift;
             color.g -= shift;
             color.b -= shift;
@@ -79,11 +85,11 @@ export function Panel(props: PanelProps) {
         }
     };
     return (
-        <div className="container">
-            <div className="header">
-                <a className="icone-local" data-icon="("></a>
+        <div className="weather-app-container">
+            <div className="weather-header">
+                <a className="location-icon" data-icon="("></a>
                 <input
-                    className="input-local"
+                    className="location-input"
                     style={
                         isHighContrast
                             ? { backgroundColor: "black", color: "white" }
@@ -95,25 +101,28 @@ export function Panel(props: PanelProps) {
                     onKeyDown={handleKeyPress}
                     placeholder="Digite a localização"
                 />
-                <div onClick={toggleHighContrast} className="contrast-button">
+                <div
+                    onClick={toggleHighContrast}
+                    className="toggle-contrast-btn"
+                >
                     <FaEye />
                 </div>
             </div>
             <div
-                className="main"
+                className="weather-display-area"
                 style={{
                     backgroundColor: getColor(convertedTempToday, 0.7, 0),
                 }}
             >
-                <div className="img">
+                <div className="weather-icon-container">
                     <a
-                        className="icone-tempo"
+                        className="current-weather-icon"
                         data-icon={data ? data.icon : ""}
                     ></a>
                 </div>
 
-                <div className="text">
-                    <div className="start">
+                <div className="weather-info">
+                    <div className="today-weather-summary">
                         <span>HOJE</span>
                         <span
                             onClick={toggleTemperature}
@@ -126,10 +135,10 @@ export function Panel(props: PanelProps) {
                                 : "--°C"}
                         </span>
                     </div>
-                    <div className="middle">
+                    <div className="current-weather-status">
                         <span>{data ? data.status : "--"}</span>
                     </div>
-                    <div className="end">
+                    <div className="additional-weather-details">
                         <span>
                             Vento: {data ? `NO ${data.wind}km/h` : "--km/h"}
                         </span>
@@ -143,12 +152,12 @@ export function Panel(props: PanelProps) {
                 </div>
             </div>
             <div
-                className="content"
+                className="tomorrow-weather-container"
                 style={{
                     backgroundColor: getColor(convertedTempTomorrow, 0.85, 0),
                 }}
             >
-                <div className="info">
+                <div className="future-weather-info">
                     <span>AMANHÃ</span>
                     <span
                         onClick={toggleTemperature}
@@ -163,7 +172,7 @@ export function Panel(props: PanelProps) {
                 </div>
             </div>
             <div
-                className="content"
+                className="day-after-tomorrow-weather-container"
                 style={{
                     backgroundColor: getColor(
                         convertedTempAfterTomorrow,
@@ -172,7 +181,7 @@ export function Panel(props: PanelProps) {
                     ),
                 }}
             >
-                <div className="info">
+                <div className="future-weather-info">
                     <span>DEPOIS DE AMANHÃ</span>
                     <span
                         onClick={toggleTemperature}

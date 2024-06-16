@@ -1,3 +1,4 @@
+/** Fetch daily Bing background image URL */
 export async function getBingApi(): Promise<string> {
     try {
         const response = await fetch(
