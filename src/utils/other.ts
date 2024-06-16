@@ -4,13 +4,10 @@ export interface Rgb {
     b: number;
 }
 
-export const getColorForTemperature = (
-    temp: number,
-    opacity: number
-): string => {
+export const getColorForTemperature = (temp: number): Rgb => {
     let color: Rgb;
     if (temp <= 15) {
-        color = { r: 0, g: 0, b: 255 }; // Azul para temperaturas frias
+        color = { r: 13, g: 71, b: 161 }; // Azul para temperaturas frias
     } else if (temp > 15 && temp <= 20) {
         color = { r: 255, g: 238, b: 88 }; // Amarelo escuro para temperaturas amenas
     } else if (temp > 20 && temp <= 25) {
@@ -23,7 +20,7 @@ export const getColorForTemperature = (
         color = { r: 244, g: 67, b: 54 }; // Vermelho para temperaturas extremamente quentes
     }
 
-    return `rgb(${color.r}, ${color.g}, ${color.b}, ${opacity})`;
+    return color;
 };
 
 export function increaseDay(todaysDate: Date): Date {

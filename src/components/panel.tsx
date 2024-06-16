@@ -1,9 +1,11 @@
 import React from "react";
+import { FaEye } from "react-icons/fa";
 import {
     convertTemperature,
     getColorForTemperature,
     roundToInteger,
 } from "../utils/other";
+
 interface PanelData {
     localization: string;
     status: string;
@@ -28,12 +30,19 @@ export function Panel(props: PanelProps) {
     const [localization, setlocalization] = React.useState(
         data ? data.localization : ""
     );
+    const [isHighContrast, setIsHighContrast] = React.useState(false);
+
     React.useEffect(() => {
         setlocalization(data ? data.localization : "");
     }, [data?.localization]);
 
     const toggleTemperature = () => {
         setIsCelsius(!isCelsius);
+    };
+
+    const toggleHighContrast = () => {
+        document.body.classList.toggle("high-contrast");
+        setIsHighContrast(!isHighContrast);
     };
 
     const convertedTempToday = data
@@ -46,13 +55,19 @@ export function Panel(props: PanelProps) {
         ? convertTemperature(data.theDayAfterTomorrowTemp, isCelsius)
         : 0;
 
-    const todayColor = data ? getColorForTemperature(data.temp, 0.7) : "grey";
-    const tomorrowColor = data
-        ? getColorForTemperature(data.tomorrowTemp, 0.85)
-        : "grey";
-    const dayAfterTomorrowColor = data
-        ? getColorForTemperature(data.theDayAfterTomorrowTemp, 0.85)
-        : "grey";
+    function getColor(temp: number, opacity: number, shift: number): string {
+        if (isHighContrast) {
+            return "black";
+        } else if (data) {
+            let color = getColorForTemperature(data.temp);
+            color.r -= shift;
+            color.g -= shift;
+            color.b -= shift;
+            return `rgba(${color.r}, ${color.g}, ${color.b}, ${opacity})`;
+        } else {
+            return "grey";
+        }
+    }
 
     const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setlocalization(event.target.value);
@@ -66,19 +81,30 @@ export function Panel(props: PanelProps) {
     return (
         <div className="container">
             <div className="header">
-                <div className="local">
-                    <a className="icone-local" data-icon="("></a>
-
-                    <input
-                        type="text"
-                        value={localization}
-                        onChange={handleInputChange}
-                        onKeyDown={handleKeyPress}
-                        placeholder="Digite a localização"
-                    />
+                <a className="icone-local" data-icon="("></a>
+                <input
+                    className="input-local"
+                    style={
+                        isHighContrast
+                            ? { backgroundColor: "black", color: "white" }
+                            : undefined
+                    }
+                    type="text"
+                    value={localization}
+                    onChange={handleInputChange}
+                    onKeyDown={handleKeyPress}
+                    placeholder="Digite a localização"
+                />
+                <div onClick={toggleHighContrast} className="contrast-button">
+                    <FaEye />
                 </div>
             </div>
-            <div className="main" style={{ backgroundColor: todayColor }}>
+            <div
+                className="main"
+                style={{
+                    backgroundColor: getColor(convertedTempToday, 0.7, 0),
+                }}
+            >
                 <div className="img">
                     <a
                         className="icone-tempo"
@@ -116,7 +142,12 @@ export function Panel(props: PanelProps) {
                     </div>
                 </div>
             </div>
-            <div className="content" style={{ backgroundColor: tomorrowColor }}>
+            <div
+                className="content"
+                style={{
+                    backgroundColor: getColor(convertedTempTomorrow, 0.85, 0),
+                }}
+            >
                 <div className="info">
                     <span>AMANHÃ</span>
                     <span
@@ -132,10 +163,16 @@ export function Panel(props: PanelProps) {
                 </div>
             </div>
             <div
-                className="content2"
-                style={{ backgroundColor: dayAfterTomorrowColor }}
+                className="content"
+                style={{
+                    backgroundColor: getColor(
+                        convertedTempAfterTomorrow,
+                        0.85,
+                        20
+                    ),
+                }}
             >
-                <div className="footer">
+                <div className="info">
                     <span>DEPOIS DE AMANHÃ</span>
                     <span
                         onClick={toggleTemperature}
