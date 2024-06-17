@@ -79,6 +79,11 @@ The app is fully responsive and adjusts to different screen sizes, ensuring a co
 
 ![Cellphone screen size](/images/cell_screen_size.png)
 
+## Assertiveness
+
+-   Dockers were not added to the repository for now;
+-   Security issues with API keys must be fixed in the future.
+
 ## References
 
 -   Meteocons;
