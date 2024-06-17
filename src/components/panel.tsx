@@ -51,16 +51,16 @@ export function Panel(props: PanelProps) {
         setIsHighContrast(!isHighContrast);
     };
 
-    const convertedTempToday = data
-        ? convertTemperature(data.temp, isCelsius)
-        : 0;
-    const convertedTempTomorrow = data
-        ? convertTemperature(data.tomorrowTemp, isCelsius)
-        : 0;
-    const convertedTempAfterTomorrow = data
-        ? convertTemperature(data.theDayAfterTomorrowTemp, isCelsius)
-        : 0;
+    const tempToday = data ? data.temp : 0,
+        tempTomorrow = data ? data.tomorrowTemp : 0,
+        tempAfterTomorrow = data ? data.theDayAfterTomorrowTemp : 0;
 
+    const convertedTempToday = convertTemperature(tempToday, isCelsius);
+    const convertedTempTomorrow = convertTemperature(tempTomorrow, isCelsius);
+    const convertedTempAfterTomorrow = convertTemperature(
+        tempAfterTomorrow,
+        isCelsius
+    );
     function getColor(temp: number, opacity: number, shift: number): string {
         if (isHighContrast) {
             return "black";
@@ -111,7 +111,7 @@ export function Panel(props: PanelProps) {
             <div
                 className="weather-display-area"
                 style={{
-                    backgroundColor: getColor(convertedTempToday, 0.7, 0),
+                    backgroundColor: getColor(tempToday, 0.7, 0),
                 }}
             >
                 <div className="weather-icon-container">
@@ -154,7 +154,7 @@ export function Panel(props: PanelProps) {
             <div
                 className="tomorrow-weather-container"
                 style={{
-                    backgroundColor: getColor(convertedTempTomorrow, 0.85, 0),
+                    backgroundColor: getColor(tempTomorrow, 0.85, 0),
                 }}
             >
                 <div className="future-weather-info">
@@ -174,11 +174,7 @@ export function Panel(props: PanelProps) {
             <div
                 className="day-after-tomorrow-weather-container"
                 style={{
-                    backgroundColor: getColor(
-                        convertedTempAfterTomorrow,
-                        0.85,
-                        20
-                    ),
+                    backgroundColor: getColor(tempAfterTomorrow, 0.85, 20),
                 }}
             >
                 <div className="future-weather-info">
