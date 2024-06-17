@@ -31,15 +31,22 @@ function App() {
     };
     React.useEffect(() => {
         async function init() {
-            let backgroundUrl = await getBingApi();
-            setBingImage(backgroundUrl);
+            try {
+                let backgroundUrl = await getBingApi();
+                setBingImage(backgroundUrl);
+            } catch (error) {
+                console.error("Error getting bing image!", error);
+            }
+            try {
+                const latLong = await getLatLong();
+                const lat = latLong.coords.latitude;
+                const long = latLong.coords.longitude;
 
-            const latLong = await getLatLong();
-            const lat = latLong.coords.latitude;
-            const long = latLong.coords.longitude;
-
-            const localization = await getOpenCageApi(lat, long);
-            setLocal(localization);
+                const localization = await getOpenCageApi(lat, long);
+                setLocal(localization);
+            } catch (error) {
+                console.error("User denied permission!", error);
+            }
         }
         init();
     }, []);
@@ -47,11 +54,11 @@ function App() {
         async function fetchData() {
             try {
                 if (local == "") {
-                    throw new Error("Localização não informada!");
+                    throw new Error("Location not informed!");
                 }
                 const todaysForecast = await getOpenWeatherToday(local);
                 if (todaysForecast.icon == "?") {
-                    throw new Error("Localização inválida!");
+                    throw new Error("Invalid location!");
                 }
                 const tomorrowsDate = increaseDay(todaysForecast.date);
                 const tomorrowsTemp = await getOpenWeatherTemperature(
@@ -73,7 +80,7 @@ function App() {
                 });
             } catch (error) {
                 setInfo(null);
-                console.error("Erro ao obter localização:", error);
+                console.error("Error getting forecast!", error);
             }
         }
 

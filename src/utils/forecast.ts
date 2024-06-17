@@ -31,7 +31,7 @@ export async function getOpenCageApi(
         let local = city + "," + countryCode;
         return local;
     } catch (error) {
-        console.error("Erro ao obter dados do OpenCage:", error);
+        console.error("Error fetching OpenCage data!", error);
         throw error;
     }
 }
@@ -82,7 +82,7 @@ export async function getOpenWeatherToday(local: string): Promise<WeatherData> {
 
         return todaysForecast;
     } catch (error) {
-        console.error("Erro ao obter dados do OpenWeather:", error);
+        console.error("Error fetching OpenWeather data!", error);
         throw error;
     }
 }
@@ -122,7 +122,7 @@ export async function getOpenWeatherTemperature(
         }
         return closestForecast.main.temp;
     } catch (error) {
-        console.error("Erro ao obter dados do OpenWeather:", error);
+        console.error("Error fetching OpenWeather data!", error);
         throw error;
     }
 }

@@ -9,7 +9,7 @@ export async function getBingApi(): Promise<string> {
         const fullUrl = `https://www.bing.com${imageUrl}`;
         return fullUrl;
     } catch (error) {
-        console.error("Erro ao obter dados da API do Bing:", error);
+        console.error("Error fetching bing data!", error);
         throw error;
     }
 }
